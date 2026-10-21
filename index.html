@@ -1,0 +1,697 @@
+<!doctype html>
+<!--
+  OPERASJON «LITT SENERE» – påminnelse for Hell Let Loose: Vietnam
+  ---------------------------------------------------------------
+  Legg denne fila som index.html i et GitHub-repo og slå på GitHub Pages.
+  Fungerer alene (lagres lokalt + i delbar lenke).
+  Vil dere se samme tid på begge telefoner? Sett opp Google Sheet-synk
+  (se apps-script.gs) og lim inn web-app-URL-en i SHEET_URL under.
+-->
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Operasjon Litt Senere</title>
+<meta name="theme-color" content="#0a120c">
+<meta name="description" content="Kampstart: litt senere. Jørgen, Øyvind og Fredrik – nedtelling til Hell Let Loose: Vietnam.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Operasjon Litt Senere">
+<meta property="og:title" content="Operasjon «Litt senere» · Hell Let Loose: Vietnam">
+<meta property="og:description" content="Kampstart: litt senere. Hvor lenge er det egentlig? Sjekk nedtellingen og meld deg klar.">
+<meta property="og:url" content="https://jortech123.github.io/HLLV/">
+<meta property="og:image" content="https://jortech123.github.io/HLLV/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Jungel i solnedgang med helikoptre og teksten Hell Let Loose Vietnam">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jortech123.github.io/HLLV/og-image.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a120c; --olive:#5b6b2f; --olive2:#8a9a4a; --khaki:#d8cfa3;
+  --amber:#ffb340; --red:#ff3b2f; --green:#8dff6a; --ink:#ece6c6; --mute:#a9a688;
+  --card:rgba(16,26,14,.66); --line:rgba(216,207,163,.2);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Oswald,system-ui,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+
+/* ---------- Bakgrunn & effekter ---------- */
+#sky{position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(110% 55% at 50% 102%, rgba(255,125,40,.38), transparent 62%),
+    radial-gradient(60% 30% at 80% 20%, rgba(140,170,120,.08), transparent 70%),
+    linear-gradient(#060c07 0%, #0f1b0d 40%, #25270f 72%, #3b2510 100%)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#jungle{z-index:2}
+#fx{z-index:5}
+.fog{position:fixed;left:-50%;width:200%;height:38vh;bottom:-4vh;z-index:3;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 50%, rgba(190,210,180,.16), transparent 55%),
+             radial-gradient(ellipse at 75% 60%, rgba(190,210,180,.12), transparent 50%);
+  filter:blur(14px);animation:drift 46s linear infinite alternate}
+.fog.f2{bottom:14vh;opacity:.65;animation-duration:70s;animation-direction:alternate-reverse}
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(22%)}}
+
+#flash{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at var(--fx,70%) 88%, rgba(255,200,110,.6), rgba(255,110,40,.18) 38%, transparent 70%)}
+#flash.on{animation:boom 1.8s ease-out}
+@keyframes boom{0%{opacity:0}4%{opacity:1}12%{opacity:.35}20%{opacity:.85}100%{opacity:0}}
+
+.heli{position:fixed;top:11vh;left:100vw;width:230px;z-index:4;pointer-events:none;opacity:0}
+.heli.fly{animation:fly 15s linear forwards}
+@keyframes fly{
+  0%{opacity:.9;transform:translate(0,0) rotate(-5deg)}
+  50%{transform:translate(-62vw,5vh) rotate(-6deg)}
+  100%{opacity:.9;transform:translate(calc(-100vw - 320px),-1vh) rotate(-4deg)}}
+.heli .rotor{transform-box:fill-box;transform-origin:center;animation:rotor .085s linear infinite}
+.heli .trotor{transform-box:fill-box;transform-origin:center;animation:spin .12s linear infinite}
+@keyframes rotor{50%{transform:scaleX(.12)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.crt{position:fixed;inset:0;z-index:30;pointer-events:none;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 1px, transparent 1px 3px),
+             radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.7))}
+
+/* ---------- Layout ---------- */
+main{position:relative;z-index:10;max-width:760px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px 90px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);letter-spacing:.06em}
+.link{display:flex;align-items:center;gap:7px}
+.dot{width:9px;height:9px;border-radius:50%;background:#777;box-shadow:0 0 8px currentColor}
+.dot.ok{background:var(--green);color:var(--green)}
+.dot.bad{background:var(--red);color:var(--red)}
+.tb-right{display:flex;gap:8px;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:transparent;border:0;padding:6px 10px;cursor:pointer;color:var(--mute)}
+.seg button.on{background:var(--olive);color:#fff}
+.icon-btn{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+
+.hero{text-align:center;margin:34px 0 22px;position:relative}
+.stamp{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.3em;
+  color:var(--red);border:2px solid var(--red);padding:4px 10px;transform:rotate(-2deg);opacity:.85;margin-bottom:14px}
+h1{font-family:'Black Ops One',Oswald,sans-serif;font-weight:400;line-height:.92;letter-spacing:.02em;
+  font-size:clamp(42px,12vw,92px);color:var(--khaki);
+  text-shadow:0 2px 0 #2b2a14,0 0 26px rgba(255,170,60,.25)}
+h1 .v{display:block;font-size:.62em;color:var(--amber);letter-spacing:.32em;margin-top:6px;
+  text-shadow:0 0 18px rgba(255,170,60,.55)}
+.sub{margin-top:14px;font-size:clamp(16px,4.4vw,21px);color:var(--ink);opacity:.9}
+.sub em{font-style:normal;color:var(--amber)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 18px;margin:14px 0;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.label{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.24em;color:var(--olive2);text-transform:uppercase}
+
+/* Nedtelling */
+.count{text-align:center}
+.clock{font-family:'Share Tech Mono',monospace;font-size:clamp(54px,17vw,112px);line-height:1;margin:10px 0 6px;
+  color:var(--amber);text-shadow:0 0 12px rgba(255,170,60,.7),0 0 40px rgba(255,120,30,.35);font-variant-numeric:tabular-nums}
+.clock b{font-weight:400;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.when{font-size:18px;color:var(--ink)}
+.when strong{color:var(--amber);font-weight:600}
+.over{font-family:'Share Tech Mono',monospace;color:var(--red);margin-top:6px;min-height:20px}
+.bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);margin-top:16px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--olive),var(--amber));box-shadow:0 0 12px var(--amber);transition:width .4s}
+.bar-txt{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);margin-top:6px}
+
+.go-banner{display:none;margin-top:14px;font-family:'Black Ops One',sans-serif;font-size:clamp(26px,8vw,44px);
+  color:#fff;background:var(--red);padding:10px;border-radius:10px;animation:pulse .6s ease-in-out infinite alternate}
+@keyframes pulse{to{box-shadow:0 0 40px var(--red);transform:scale(1.03)}}
+
+/* Kalibrator */
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.said{margin:12px 0 18px;font-size:17px}
+input[type=time]{background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:8px;padding:6px 10px;
+  font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--amber);color-scheme:dark}
+.big{font-family:'Share Tech Mono',monospace;font-size:30px;color:var(--amber)}
+.interp{font-size:19px;margin:4px 0 14px;min-height:28px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:8px;outline:none;
+  background:linear-gradient(90deg,var(--amber) 0,var(--amber) var(--p,20%),rgba(255,255,255,.12) var(--p,20%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#e9e0a8,#6b7a35);border:2px solid #1d2410;box-shadow:0 0 14px rgba(255,170,60,.6);cursor:grab}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#8a9a4a;border:2px solid #1d2410;cursor:grab}
+.scale{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;font-size:14px;transition:.15s}
+.chip:hover,.chip:active{border-color:var(--amber);color:var(--amber)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:10px;padding:13px 12px;cursor:pointer;font-weight:600;letter-spacing:.04em;font-size:16px;transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.snooze{background:#3a2a12;color:var(--amber);border:1px solid rgba(255,179,64,.4)}
+.btn.now{background:var(--olive);color:#fff}
+.btn.ghost{background:rgba(0,0,0,.35);border:1px solid var(--line)}
+.snz{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);margin-top:10px;text-align:center}
+
+/* Klar-sjekk */
+.ready{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.rbtn{border:1px solid var(--line);background:rgba(0,0,0,.35);border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center}
+.rbtn .n{font-size:18px;font-weight:600}
+.rbtn .s{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);margin-top:4px}
+.rbtn.on{border-color:var(--green);background:rgba(60,120,40,.35);box-shadow:0 0 18px rgba(141,255,106,.25)}
+.rbtn.on .s{color:var(--green)}
+.both{display:none;text-align:center;margin-top:12px;font-family:'Black Ops One',sans-serif;font-size:24px;color:var(--green);
+  text-shadow:0 0 14px rgba(141,255,106,.6)}
+.both.on{display:block;animation:pulse .7s ease-in-out infinite alternate}
+
+/* Radio */
+.radio ul{list-style:none;margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:14px}
+.radio li{padding:6px 0;border-bottom:1px dashed rgba(216,207,163,.12);color:#c9e8b8}
+.radio li:first-child{color:var(--green);text-shadow:0 0 8px rgba(141,255,106,.5)}
+.radio time{color:var(--mute);margin-right:8px}
+.foot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.small{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);text-align:center;margin-top:18px;opacity:.7}
+
+/* Jungelkommando (minispill oppå siden) */
+.btn.game{display:block;width:100%;margin:14px 0 10px;padding:15px 12px;font-size:21px;color:#fff8df;border:1px solid rgba(141,255,106,.35);
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 5px),linear-gradient(#6d7f35,#4a5a22);box-shadow:0 0 22px rgba(141,255,106,.12)}
+.btn.game small{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:400;letter-spacing:.06em;color:var(--khaki);opacity:.85;margin-top:4px}
+#jkOv{position:fixed;inset:0;z-index:100;background:#0a0f09;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#jkOv[hidden]{display:none}
+#jkOv iframe{display:block;width:100%;height:100%;border:0}
+body.jk{overflow:hidden}
+
+/* GO-modus */
+body.go #sky{animation:alarm 1s steps(2) infinite}
+@keyframes alarm{50%{filter:hue-rotate(-50deg) saturate(2.2) brightness(1.35)}}
+body.go .go-banner{display:block}
+body.go .clock{color:var(--red);text-shadow:0 0 14px rgba(255,59,47,.9)}
+body.shake main{animation:shake .45s 4}
+@keyframes shake{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(4px,3px)}}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(120px);z-index:40;background:#1b2412;
+  border:1px solid var(--amber);color:var(--amber);padding:10px 16px;border-radius:10px;font-family:'Share Tech Mono',monospace;transition:.3s}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){.fog,.heli,.clock b{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<canvas id="jungle"></canvas>
+<div class="fog"></div><div class="fog f2"></div>
+<div id="flash"></div>
+<svg class="heli" id="heli" viewBox="0 0 240 80" aria-hidden="true">
+  <g fill="#040704">
+    <rect class="rotor" x="8" y="6" width="224" height="4" rx="2"/>
+    <rect x="96" y="9" width="7" height="14"/>
+    <path d="M18 34 Q24 22 62 20 L118 20 Q140 20 146 30 L150 40 Q146 56 110 58 L56 58 Q22 56 18 44Z"/>
+    <path d="M140 30 L224 30 L226 22 L232 22 L230 42 L222 38 L146 44Z"/>
+    <rect x="34" y="68" width="98" height="3" rx="1.5"/>
+    <rect x="50" y="56" width="3" height="13"/><rect x="112" y="56" width="3" height="13"/>
+    <circle class="trotor" cx="229" cy="32" r="9" fill="none" stroke="#040704" stroke-width="2" stroke-dasharray="14 6"/>
+  </g>
+  <path d="M24 34 Q30 26 52 25 L52 40 L22 40Z" fill="rgba(255,190,90,.22)"/>
+</svg>
+<canvas id="fx"></canvas>
+<div class="crt"></div>
+
+<main>
+  <div class="topbar">
+    <div class="link"><span class="dot" id="dot"></span><span id="linkTxt">LOKAL MODUS</span></div>
+    <div class="tb-right">
+      <div class="seg" id="meSeg"><button data-me="a"></button><button data-me="b"></button><button data-me="c"></button></div>
+      <button class="icon-btn" id="soundBtn" aria-label="Lyd">🔇</button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="stamp">TOPP HEMMELIG · OPS-ORDRE</div>
+    <h1>HELL LET LOOSE<span class="v">VIETNAM</span></h1>
+    <p class="sub">Operasjon: <em>«Litt senere»</em></p>
+  </header>
+
+  <section class="card count">
+    <div class="label">Kampstart om</div>
+    <div class="clock"><span id="hh">00</span><b>:</b><span id="mm">00</span><b>:</b><span id="ss">00</span></div>
+    <div class="when">Utrykning kl <strong id="tgtTime">--:--</strong></div>
+    <div class="over" id="over"></div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="bar-txt"><span id="barFrom">--:--</span><span id="barPct">0 % av ventetiden</span><span id="barTo">--:--</span></div>
+    <div class="go-banner">TIDEN ER INNE · LOGG PÅ!</div>
+  </section>
+
+  <section class="card">
+    <div class="label">Litt senere-kalibrator</div>
+    <div class="row said"><span id="saidWho"></span> sa «kanskje litt senere» kl <input type="time" id="saidInp"></div>
+    <div class="row" style="justify-content:space-between;align-items:baseline">
+      <span>«Litt senere» betyr:</span><span class="big" id="minLbl">60 min</span>
+    </div>
+    <div class="interp" id="interp"></div>
+    <input type="range" id="slider" min="5" max="480" step="5" value="60" aria-label="Hvor lenge er litt senere">
+    <div class="scale"><span>5 min</span><span>2 t</span><span>4 t</span><span>6 t</span><span>8 t</span></div>
+    <div class="chips">
+      <button class="chip" data-min="15">⚡ Ekte (15 min)</button>
+      <button class="chip" data-min="45">🇳🇴 Norsk (45 min)</button>
+      <button class="chip" data-min="90">🍝 Etter middag</button>
+      <button class="chip" data-min="180">🛏️ Etter leggetid</button>
+      <button class="chip" data-min="420">🌙 Kanskje i morgen</button>
+    </div>
+    <div class="actions">
+      <button class="btn snooze" id="snoozeBtn"></button>
+      <button class="btn now" id="nowBtn">🚁 Start NÅ</button>
+    </div>
+    <div class="snz" id="snz"></div>
+  </section>
+
+  <section class="card">
+    <div class="label">Klar-sjekk</div>
+    <div class="ready">
+      <button class="rbtn" data-r="a"><div class="n"></div><div class="s">IKKE KLAR</div></button>
+      <button class="rbtn" data-r="b"><div class="n"></div><div class="s">IKKE KLAR</div></button>
+      <button class="rbtn" data-r="c"><div class="n"></div><div class="s">IKKE KLAR</div></button>
+    </div>
+    <div class="both" id="both">ALLE KLARE · DEPLOY!</div>
+  </section>
+
+  <section class="card radio">
+    <div class="label">📻 Sambandslogg</div>
+    <ul id="log"></ul>
+  </section>
+
+  <button class="btn game" id="jkOpen">🎮 Jungelkommando<small>Spill mens dere venter</small></button>
+
+  <div class="foot">
+    <button class="btn ghost" id="shareBtn">🔗 Del lenke</button>
+    <button class="btn ghost" id="notifBtn">🔔 Varsle meg</button>
+  </div>
+  <p class="small">Uoffisiell vennepåminnelse. Ingen tilknytning til spillets utgivere.</p>
+</main>
+<div class="toast" id="toast"></div>
+<div id="jkOv" hidden><iframe id="jkFrame" title="Jungelkommando" allow="screen-wake-lock; autoplay"></iframe></div>
+
+<script>
+/* ======================= KONFIGURASJON ======================= */
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyoWlmp6qAYPe-0NP8G4dyPxwq_JNE568l6bIYjcYro739Cbi3dPWhLplJp6xM87G4/exec';              // Lim inn Apps Script web-app-URL (…/exec) for synk mellom telefoner
+const PLAYERS = { a: 'Jørgen', b: 'Øyvind', c: 'Fredrik' };
+const DEFAULT_SAID = '19:45';      // når «litt senere» ble sagt
+const DEFAULT_MIN = 60;            // standardtolkning i minutter
+const SNOOZE_MIN = 15;
+/* ============================================================= */
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LS = 'hll-litt-senere-v1';
+const pad = n => String(n).padStart(2, '0');
+const hhmm = ms => { const d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const todayAt = v => { const [h, m] = v.split(':').map(Number); const d = new Date(); d.setHours(h, m, 0, 0); return d.getTime(); };
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const allReady = () => Object.keys(PLAYERS).every(k => state.ready[k]);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let state = { saidAt: todayAt(DEFAULT_SAID), minutes: DEFAULT_MIN, snoozes: 0, ready: { a: false, b: false, c: false }, updatedAt: 0, by: '' };
+let me = 'a';
+
+/* ---------- Lagring: localStorage + URL ---------- */
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LS);
+    if (raw) { const j = JSON.parse(raw); if (j.state) state = { ...state, ...j.state }; if (j.me) me = j.me; }
+  } catch (e) {}
+  const p = new URLSearchParams(location.search);
+  if (p.has('s') && p.has('m')) {
+    const s = Number(p.get('s')), m = Number(p.get('m'));
+    if (s > 0 && m >= 0) { state.saidAt = s; state.minutes = m; state.snoozes = Number(p.get('z')) || 0; }
+  }
+}
+function saveLocal() {
+  try { localStorage.setItem(LS, JSON.stringify({ state, me })); } catch (e) {}
+  try {
+    const q = new URLSearchParams({ s: state.saidAt, m: Math.round(state.minutes * 100) / 100, z: state.snoozes });
+    history.replaceState(null, '', location.pathname + '?' + q);
+  } catch (e) {}
+}
+const target = () => state.saidAt + state.minutes * 60000;
+
+/* ---------- Tolkning ---------- */
+function interp(m) {
+  if (m <= 10) return 'Bokstavelig talt litt senere. Mistenkelig raskt.';
+  if (m <= 30) return 'Ekte «litt senere». En sjelden art.';
+  if (m <= 60) return 'Klassisk norsk «litt senere».';
+  if (m <= 120) return 'Etter middag, oppvask og «bare én ting til».';
+  if (m <= 180) return 'Når ungene har lagt seg. Kanskje.';
+  if (m <= 300) return 'Vagt optimistisk. Ha headsettet klart likevel.';
+  return '«Litt senere» = i morgen. Beklager.';
+}
+function fmtDur(m) {
+  m = Math.round(m);
+  if (m < 60) return m + ' min';
+  const h = Math.floor(m / 60), r = m % 60;
+  return h + ' t' + (r ? ' ' + r + ' min' : '');
+}
+function dayTag(ms) {
+  const d = new Date(ms), t = new Date();
+  const diff = Math.round((new Date(d.toDateString()) - new Date(t.toDateString())) / 864e5);
+  return diff === 0 ? '' : diff === 1 ? ' (i morgen)' : diff === -1 ? ' (i går)' : ' (' + d.toLocaleDateString('no') + ')';
+}
+
+/* ---------- Rendering ---------- */
+const slider = $('#slider'), saidInp = $('#saidInp');
+let dragging = false;
+function render() {
+  $('#minLbl').textContent = fmtDur(state.minutes);
+  $('#interp').textContent = interp(state.minutes);
+  if (!dragging) slider.value = clamp(Math.round(state.minutes / 5) * 5, 5, 480);
+  slider.style.setProperty('--p', ((slider.value - 5) / 475 * 100) + '%');
+  if (document.activeElement !== saidInp) saidInp.value = hhmm(state.saidAt);
+  $('#tgtTime').textContent = hhmm(target()) + dayTag(target());
+  $('#barFrom').textContent = hhmm(state.saidAt);
+  $('#barTo').textContent = hhmm(target());
+  $('#saidWho').textContent = PLAYERS.b;
+  $('#snoozeBtn').textContent = `😴 ${PLAYERS.b}-knappen +${SNOOZE_MIN}`;
+  $('#snz').textContent = state.snoozes ? `Utsatt ${state.snoozes} gang${state.snoozes > 1 ? 'er' : ''} så langt.` + (state.snoozes >= 3 ? ' Mønsteret er tydelig.' : '') : 'Ingen utsettelser ennå. Imponerende.';
+  $$('#meSeg button').forEach(b => { b.textContent = PLAYERS[b.dataset.me]; b.classList.toggle('on', b.dataset.me === me); });
+  $$('.rbtn').forEach(b => {
+    const k = b.dataset.r, on = !!state.ready[k];
+    b.classList.toggle('on', on);
+    b.querySelector('.n').textContent = PLAYERS[k];
+    b.querySelector('.s').textContent = on ? '✔ KLAR' : 'IKKE KLAR';
+  });
+  $('#both').classList.toggle('on', allReady());
+}
+
+/* ---------- Endringer ---------- */
+function change(msg) {
+  state.updatedAt = Date.now(); state.by = me;
+  saveLocal(); render(); tick(); scheduleSync();
+  if (msg) radio(msg);
+}
+slider.addEventListener('pointerdown', () => dragging = true);
+['pointerup', 'pointercancel', 'change'].forEach(ev => slider.addEventListener(ev, () => { if (dragging) { dragging = false; change(`${PLAYERS[me]}: «litt senere» rekalibrert til ${fmtDur(state.minutes)}.`); } }));
+slider.addEventListener('input', () => { state.minutes = Number(slider.value); state.updatedAt = Date.now(); saveLocal(); render(); tick(); });
+saidInp.addEventListener('change', () => { if (saidInp.value) { state.saidAt = todayAt(saidInp.value); change(`HQ: Utgangspunkt korrigert til kl ${saidInp.value}.`); } });
+$$('.chip').forEach(c => c.addEventListener('click', () => { state.minutes = Number(c.dataset.min); change(`${PLAYERS[me]}: tolker det som ${fmtDur(state.minutes)}. ${c.textContent.split(' ')[0]}`); kaboom(); }));
+$('#snoozeBtn').addEventListener('click', () => {
+  state.minutes = Math.max(state.minutes, (Date.now() - state.saidAt) / 60000) + SNOOZE_MIN;
+  state.snoozes++;
+  const lines = [`${PLAYERS.b}-knappen trykket. +${SNOOZE_MIN} min.`, 'HQ: Igjen? Mottatt…', 'Etterretning: som forventet.', 'Logistikk: bestiller mer kaffe.'];
+  change(lines[Math.min(state.snoozes - 1, lines.length - 1)]);
+  kaboom();
+});
+$('#nowBtn').addEventListener('click', () => {
+  state.minutes = Math.max(0, (Date.now() - state.saidAt) / 60000);
+  change(`${PLAYERS[me]}: GÅ GÅ GÅ! Kampstart nå!`);
+});
+$$('.rbtn').forEach(b => b.addEventListener('click', () => {
+  const k = b.dataset.r; state.ready[k] = !state.ready[k];
+  change(`${PLAYERS[k]} melder ${state.ready[k] ? 'KLAR. Lastet og sikret.' : 'seg ut igjen. Hm.'}`);
+  if (allReady()) { kaboom(); burstTracers(14); alarmBeeps(3); }
+}));
+$$('#meSeg button').forEach(b => b.addEventListener('click', () => { me = b.dataset.me; saveLocal(); render(); toast('Du er ' + PLAYERS[me]); }));
+
+/* ---------- Nedtelling ---------- */
+let goMode = false, warned5 = false;
+function tick() {
+  const now = Date.now(), tgt = target(), rem = tgt - now;
+  let s = Math.max(0, Math.ceil(rem / 1000));
+  $('#hh').textContent = pad(Math.floor(s / 3600));
+  $('#mm').textContent = pad(Math.floor(s % 3600 / 60));
+  $('#ss').textContent = pad(s % 60);
+  const span = Math.max(1, tgt - state.saidAt);
+  const p = clamp((now - state.saidAt) / span, 0, 1);
+  $('#barFill').style.width = (p * 100) + '%';
+  $('#barPct').textContent = Math.round(p * 100) + ' % av ventetiden';
+  if (rem > 0) {
+    if (goMode) { goMode = false; document.body.classList.remove('go'); }
+    $('#over').textContent = '';
+    if (rem <= 300000 && !warned5) { warned5 = true; radio('HQ: 5 minutter til kampstart. Start spillet!'); jkMsg('5 minutter til kampstart!'); notify('5 min til Hell Let Loose', 'Start spillet og ta på headsettet.'); }
+    if (rem > 300000) warned5 = false;
+    document.title = `⏱ ${s >= 3600 ? Math.floor(s / 3600) + ':' : ''}${pad(Math.floor(s % 3600 / 60))}:${pad(s % 60)} · Litt senere`;
+  } else {
+    const late = -rem, lm = Math.floor(late / 60000);
+    $('#over').textContent = lm >= 1 ? `Forsinket med ${fmtDur(lm)}` + (late > 3 * 36e5 ? ' – operasjonen kan anses utløpt. Sett ny tid.' : '') : '';
+    if (!goMode) {
+      goMode = true; document.body.classList.add('go');
+      if (late < 60000) {
+        jkClose();
+        document.body.classList.add('shake'); setTimeout(() => document.body.classList.remove('shake'), 1900);
+        alarmBeeps(6); kaboom(); burstTracers(20);
+        radio('HQ: TIDEN ER INNE. Alle enheter: logg på!');
+        notify('TIDEN ER INNE!', `«Litt senere» er nå. Logg på Hell Let Loose: Vietnam!`);
+      }
+    }
+    document.title = '🚨 LOGG PÅ! · Litt senere';
+  }
+}
+
+/* ---------- Sambandslogg ---------- */
+const log = $('#log'), radioQ = []; let typing = false;
+function radio(msg) { radioQ.push(msg); if (!typing) nextRadio(); }
+function nextRadio() {
+  const msg = radioQ.shift();
+  if (!msg) { typing = false; return; }
+  typing = true;
+  const li = document.createElement('li'), t = document.createElement('time'), sp = document.createElement('span');
+  t.textContent = hhmm(Date.now()); li.append(t, sp); log.prepend(li);
+  while (log.children.length > 5) log.lastChild.remove();
+  radioClick();
+  let i = 0;
+  const iv = setInterval(() => { sp.textContent = msg.slice(0, ++i); if (i >= msg.length) { clearInterval(iv); setTimeout(nextRadio, 350); } }, 26);
+}
+const chatter = () => [
+  `HQ til ${PLAYERS.b}: definer «litt senere». Over.`,
+  `${PLAYERS.b}: 🙃 Over og ut.`,
+  'Rekognosering: kaffen er påfylt.',
+  'Logistikk: headsettet er ladet.',
+  'Værmelding: tåke, regn og høy luftfuktighet. Typisk.',
+  'Samband: talekanalen står åpen.',
+  `HQ: ${PLAYERS.c} er observert med headsett. Lovende.`,
+  `HQ: ${PLAYERS.a} har sjekket klokka igjen.`,
+  'Etterretning: «litt senere» er historisk sett 1,7× lengre enn oppgitt.',
+  'Medic: drikk vann mellom hver respawn.',
+  'Ingeniør: bygg garnisoner, ikke unnskyldninger.',
+  'Artilleri: står klar. Venter bare på dere.',
+  'Helikopterpilot: rotoren går. Hvor er passasjerene?'
+];
+function ambientRadio() { const c = chatter(); radio(c[Math.floor(Math.random() * c.length)]); setTimeout(ambientRadio, 11000 + Math.random() * 9000); }
+
+/* ---------- Toast, deling, varsler ---------- */
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2200); }
+$('#shareBtn').addEventListener('click', async () => {
+  saveLocal();
+  const url = location.href, text = `Hell Let Loose: Vietnam – «litt senere» = kl ${hhmm(target())}`;
+  try { if (navigator.share) { await navigator.share({ title: 'Operasjon Litt Senere', text, url }); return; } } catch (e) { return; }
+  try { await navigator.clipboard.writeText(url); toast('Lenke kopiert'); } catch (e) { prompt('Kopier lenken:', url); }
+});
+$('#notifBtn').addEventListener('click', async () => {
+  if (!('Notification' in window)) { toast('Varsler støttes ikke her'); return; }
+  const p = await Notification.requestPermission();
+  toast(p === 'granted' ? 'Varsler på – hold fanen åpen' : 'Varsler ble ikke tillatt');
+});
+function notify(title, body) { try { if ('Notification' in window && Notification.permission === 'granted') new Notification(title, { body }); } catch (e) {} }
+
+/* ---------- Google Sheet-synk (valgfritt) ---------- */
+let syncTimer = null, pending = false;
+function setLink(ok) {
+  const d = $('#dot'), t = $('#linkTxt');
+  if (!SHEET_URL) { d.className = 'dot'; t.textContent = 'LOKAL MODUS'; return; }
+  d.className = 'dot ' + (ok ? 'ok' : 'bad'); t.textContent = ok ? 'SAMBAND OK' : 'SAMBAND BRUTT';
+}
+function scheduleSync() { if (!SHEET_URL) return; pending = true; clearTimeout(syncTimer); syncTimer = setTimeout(push, 700); }
+async function push() {
+  const q = new URLSearchParams({ action: 'set', by: PLAYERS[me], saidAt: state.saidAt, minutes: state.minutes, snoozes: state.snoozes, readyA: state.ready.a ? 1 : 0, readyB: state.ready.b ? 1 : 0, readyC: state.ready.c ? 1 : 0 });
+  try {
+    const r = await fetch(SHEET_URL + '?' + q, { cache: 'no-store' }); const j = await r.json();
+    if (j.state) state.updatedAt = j.state.updatedAt;
+    saveLocal(); setLink(true);
+  } catch (e) { setLink(false); }
+  pending = false;
+}
+async function pull() {
+  if (!SHEET_URL || pending || dragging) return;
+  try {
+    const r = await fetch(SHEET_URL + '?action=get&_=' + Date.now(), { cache: 'no-store' }); const j = await r.json();
+    setLink(true);
+    const st = j.state;
+    if (st && st.updatedAt > state.updatedAt && !pending && !dragging) {
+      const first = state.updatedAt === 0;
+      state = { saidAt: Number(st.saidAt), minutes: Number(st.minutes), snoozes: Number(st.snoozes) || 0, ready: { a: !!st.ready.a, b: !!st.ready.b, c: !!st.ready.c }, updatedAt: st.updatedAt, by: st.by };
+      saveLocal(); render(); tick();
+      if (!first && st.by && st.by !== PLAYERS[me]) { radio(`Samband: ${st.by} endret planen – kampstart kl ${hhmm(target())}.`); jkMsg(`${st.by} endret planen. Kampstart kl ${hhmm(target())}.`); kaboom(); }
+    }
+  } catch (e) { setLink(false); }
+}
+
+/* ---------- Lyd (WebAudio, ingen filer) ---------- */
+let AC = null, master = null, noiseBuf = null, soundOn = false;
+function initAudio() {
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
+  noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate);
+  const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  // regn
+  const rain = AC.createBufferSource(); rain.buffer = noiseBuf; rain.loop = true;
+  const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1200;
+  const g = AC.createGain(); g.gain.value = .05; rain.connect(hp).connect(g).connect(master); rain.start();
+  // jungelsus
+  const hum = AC.createBufferSource(); hum.buffer = noiseBuf; hum.loop = true;
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180;
+  const g2 = AC.createGain(); g2.gain.value = .12; hum.connect(lp).connect(g2).connect(master); hum.start();
+}
+function noiseBurst(type, freq, peak, dur) {
+  if (!AC || !soundOn) return;
+  const s = AC.createBufferSource(); s.buffer = noiseBuf;
+  const f = AC.createBiquadFilter(); f.type = type; f.frequency.value = freq;
+  const g = AC.createGain(), t = AC.currentTime;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(peak, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  s.connect(f).connect(g).connect(master); s.start(t); s.stop(t + dur + .05);
+}
+const boomSound = () => noiseBurst('lowpass', 160, 1.1, 2.2);
+const radioClick = () => noiseBurst('bandpass', 2200, .25, .08);
+function beep(freq, when, dur) {
+  if (!AC || !soundOn) return;
+  const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + when;
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.12, t + .01); g.gain.setValueAtTime(.12, t + dur - .02); g.gain.linearRampToValueAtTime(0, t + dur);
+  o.connect(g).connect(master); o.start(t); o.stop(t + dur + .02);
+}
+function alarmBeeps(n) { for (let i = 0; i < n; i++) { beep(880, i * .5, .2); beep(660, i * .5 + .25, .2); } }
+function heliSound(dur) {
+  if (!AC || !soundOn) return;
+  const s = AC.createBufferSource(); s.buffer = noiseBuf; s.loop = true;
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 320;
+  const chop = AC.createGain(); chop.gain.value = .5;
+  const lfo = AC.createOscillator(); lfo.type = 'square'; lfo.frequency.value = 11;
+  const lfoG = AC.createGain(); lfoG.gain.value = .5; lfo.connect(lfoG).connect(chop.gain);
+  const env = AC.createGain(), t = AC.currentTime;
+  env.gain.setValueAtTime(0, t); env.gain.linearRampToValueAtTime(.55, t + dur * .45); env.gain.linearRampToValueAtTime(0, t + dur);
+  s.connect(lp).connect(chop).connect(env).connect(master);
+  s.start(t); lfo.start(t); s.stop(t + dur); lfo.stop(t + dur);
+}
+$('#soundBtn').addEventListener('click', () => {
+  if (!AC) initAudio();
+  AC.resume();
+  soundOn = !soundOn;
+  master.gain.setTargetAtTime(soundOn ? .7 : 0, AC.currentTime, .1);
+  $('#soundBtn').textContent = soundOn ? '🔊' : '🔇';
+  if (soundOn) radioClick();
+});
+
+/* ---------- Jungel (statisk lerret) ---------- */
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function drawJungle() {
+  const c = $('#jungle'), dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr;
+  const x = c.getContext('2d'); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const R = rng(42);
+  const layers = [
+    { base: .30, col: '#18240f', n: Math.ceil(W / 140), hMin: .14, hMax: .24, s: .7 },
+    { base: .17, col: '#0d170a', n: Math.ceil(W / 190), hMin: .2, hMax: .32, s: .9 },
+    { base: .06, col: '#040904', n: Math.ceil(W / 320) + 1, hMin: .3, hMax: .46, s: 1.25 }
+  ];
+  for (const L of layers) {
+    const gy = H * (1 - L.base);
+    x.fillStyle = L.col;
+    x.beginPath(); x.moveTo(0, H);
+    for (let px = 0; px <= W; px += 20) x.lineTo(px, gy + Math.sin(px / 90 + L.base * 20) * 10 + Math.sin(px / 37) * 5);
+    x.lineTo(W, H); x.fill();
+    for (let i = 0; i < L.n * 3; i++) { const bx = R() * W, br = (10 + R() * 26) * L.s; x.beginPath(); x.arc(bx, gy + 6, br, Math.PI, 0); x.fill(); }
+    for (let i = 0; i < L.n; i++) {
+      const bx = (i + .2 + R() * .6) * (W / L.n);
+      palm(x, bx, gy + 8, H * (L.hMin + R() * (L.hMax - L.hMin)), (R() - .5) * 90 * L.s, L.s, L.col, R);
+    }
+  }
+}
+function palm(x, bx, by, h, lean, s, col, R) {
+  const tx = bx + lean, ty = by - h, steps = 14;
+  x.strokeStyle = col; x.fillStyle = col; x.lineCap = 'round';
+  let px = bx, py = by;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps, nx = bx + lean * t * t, ny = by - h * t;
+    x.lineWidth = (9 - 6 * t) * s; x.beginPath(); x.moveTo(px, py); x.lineTo(nx, ny); x.stroke(); px = nx; py = ny;
+  }
+  const fronds = 7 + Math.floor(R() * 4);
+  for (let i = 0; i < fronds; i++) {
+    const a = -Math.PI - .35 + (Math.PI + .7) * (i / (fronds - 1)) + (R() - .5) * .25;
+    const Lf = (55 + R() * 45) * s, w = (10 + R() * 6) * s;
+    const ex = tx + Math.cos(a) * Lf, ey = ty + Math.sin(a) * Lf * .55 + Lf * .5;
+    const mx = tx + Math.cos(a) * Lf * .55, my = ty + Math.sin(a) * Lf * .45 - Lf * .1;
+    const nx = -Math.sin(a), ny = Math.cos(a);
+    x.beginPath(); x.moveTo(tx, ty);
+    x.quadraticCurveTo(mx + nx * w, my + ny * w, ex, ey);
+    x.quadraticCurveTo(mx - nx * w * .4, my - ny * w * .4, tx, ty); x.fill();
+  }
+}
+
+/* ---------- Animerte effekter ---------- */
+const fx = $('#fx'), fctx = fx.getContext('2d');
+let FW = 0, FH = 0, drops = [], flies = [], tracers = [];
+function sizeFx() {
+  const dpr = Math.min(2, devicePixelRatio || 1); FW = innerWidth; FH = innerHeight;
+  fx.width = FW * dpr; fx.height = FH * dpr; fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const nd = reduced ? 40 : Math.min(220, Math.floor(FW * FH / 6000));
+  drops = Array.from({ length: nd }, () => ({ x: Math.random() * FW * 1.2, y: Math.random() * FH, l: 10 + Math.random() * 18, v: 9 + Math.random() * 9 }));
+  flies = Array.from({ length: reduced ? 8 : 26 }, () => ({ x: Math.random() * FW, y: FH * (.5 + Math.random() * .45), ph: Math.random() * 6.28, sp: .6 + Math.random() * 1.6, dx: (Math.random() - .5) * .3, dy: (Math.random() - .5) * .2 }));
+}
+function spawnTracer(delay) {
+  setTimeout(() => {
+    const fromLeft = Math.random() < .5, red = Math.random() < .5;
+    tracers.push({ x: fromLeft ? -20 : FW + 20, y: FH * (.62 + Math.random() * .25), vx: (fromLeft ? 1 : -1) * (14 + Math.random() * 8), vy: -(2 + Math.random() * 5), life: 90, col: red ? '255,70,50' : '120,255,90' });
+  }, delay);
+}
+function burstTracers(n) { for (let i = 0; i < n; i++) spawnTracer(i * (60 + Math.random() * 90)); }
+function frame(t) {
+  fctx.clearRect(0, 0, FW, FH);
+  fctx.strokeStyle = 'rgba(200,220,205,.22)'; fctx.lineWidth = 1; fctx.beginPath();
+  for (const d of drops) {
+    fctx.moveTo(d.x, d.y); fctx.lineTo(d.x - d.l * .22, d.y + d.l);
+    d.y += d.v; d.x -= d.v * .22;
+    if (d.y > FH) { d.y = -20; d.x = Math.random() * FW * 1.2; }
+  }
+  fctx.stroke();
+  for (const f of flies) {
+    const a = (Math.sin(t / 1000 * f.sp + f.ph) + 1) / 2;
+    f.x += f.dx + Math.sin(t / 1700 + f.ph) * .25; f.y += f.dy + Math.cos(t / 2100 + f.ph) * .2;
+    if (f.x < 0) f.x = FW; if (f.x > FW) f.x = 0; if (f.y < FH * .4) f.y = FH * .95; if (f.y > FH) f.y = FH * .5;
+    fctx.fillStyle = `rgba(200,255,120,${a * .12})`; fctx.beginPath(); fctx.arc(f.x, f.y, 9, 0, 6.28); fctx.fill();
+    fctx.fillStyle = `rgba(230,255,160,${a * .9})`; fctx.beginPath(); fctx.arc(f.x, f.y, 1.6, 0, 6.28); fctx.fill();
+  }
+  fctx.lineCap = 'round';
+  for (let i = tracers.length - 1; i >= 0; i--) {
+    const tr = tracers[i];
+    fctx.strokeStyle = `rgba(${tr.col},.95)`; fctx.lineWidth = 2.2; fctx.shadowColor = `rgba(${tr.col},1)`; fctx.shadowBlur = 10;
+    fctx.beginPath(); fctx.moveTo(tr.x, tr.y); fctx.lineTo(tr.x - tr.vx * 3.5, tr.y - tr.vy * 3.5); fctx.stroke();
+    tr.x += tr.vx; tr.y += tr.vy; tr.vy += .03;
+    if (--tr.life <= 0 || tr.x < -200 || tr.x > FW + 200) tracers.splice(i, 1);
+  }
+  fctx.shadowBlur = 0;
+  if (!reduced && Math.random() < (goMode ? .03 : .004)) burstTracers(3 + Math.floor(Math.random() * 4));
+  requestAnimationFrame(frame);
+}
+function kaboom() {
+  const f = $('#flash'); f.style.setProperty('--fx', (15 + Math.random() * 70) + '%');
+  f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); boomSound();
+}
+function explosionLoop() { if (!reduced) kaboom(); setTimeout(explosionLoop, (goMode ? 3000 : 8000) + Math.random() * 9000); }
+function heliLoop() {
+  const h = $('#heli'); h.classList.remove('fly'); void h.getBoundingClientRect(); h.classList.add('fly'); heliSound(15);
+  setTimeout(heliLoop, 32000 + Math.random() * 25000);
+}
+
+/* ---------- Jungelkommando (minispill oppå siden) ---------- */
+const jkOv = $('#jkOv'), jkF = $('#jkFrame');
+function jkOpen() { if (!jkF.getAttribute('src')) jkF.src = 'jungelkommando.html'; jkOv.hidden = false; document.body.classList.add('jk'); }
+function jkClose() { if (jkOv.hidden) return; jkOv.hidden = true; document.body.classList.remove('jk'); try { jkF.contentWindow.postMessage('jk-pause', '*'); } catch (e) {} }
+function jkMsg(text) { if (jkOv.hidden) return; try { jkF.contentWindow.postMessage({ type: 'jk-msg', text }, '*'); } catch (e) {} }
+$('#jkOpen').addEventListener('click', jkOpen);
+addEventListener('message', e => { if (e.data === 'jk-close') jkClose(); });
+
+/* ---------- Oppstart ---------- */
+loadLocal();
+render(); tick(); setLink(true);
+drawJungle(); sizeFx(); requestAnimationFrame(frame);
+addEventListener('resize', () => { drawJungle(); sizeFx(); });
+setInterval(tick, 250);
+radio(`${PLAYERS.b}: «Kanskje litt senere» 🙃`);
+radio('HQ: Mottatt. Nedtelling startet.');
+setTimeout(ambientRadio, 9000);
+setTimeout(explosionLoop, 4000);
+if (!reduced) setTimeout(heliLoop, 6000);
+if (SHEET_URL) { pull(); setInterval(pull, 20000); }
+</script>
+</body>
+</html>
